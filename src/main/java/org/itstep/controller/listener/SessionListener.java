@@ -1,9 +1,13 @@
 package org.itstep.controller.listener;
 
+import org.itstep.controller.ServletUtility;
+
 import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import java.util.HashSet;
+import java.util.Set;
 
 
 public class SessionListener implements HttpSessionListener {
@@ -14,12 +18,13 @@ public class SessionListener implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
-        HashSet<String> loggedUsers = (HashSet<String>) httpSessionEvent
-                .getSession().getServletContext()
-                .getAttribute("loggedUsers");
-        String userName = (String) httpSessionEvent.getSession()
-                .getAttribute("userName");
+        HttpSession session = httpSessionEvent.getSession();
+        Set<String> loggedUsers = ServletUtility.getLoggedUsers(httpSessionEvent);
+
+        String userName = ServletUtility.getUserName(session);
         loggedUsers.remove(userName);
-        httpSessionEvent.getSession().setAttribute("loggedUsers", loggedUsers);
+
+        ServletUtility.setLoggedUsers(session, loggedUsers);
     }
+
 }
